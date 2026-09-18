@@ -461,16 +461,14 @@ setInterval(() => {
 /* ==========================================================
    啟動
    ========================================================== */
-async function init() {
-  try {
-    const res = await fetch('./questions.json');
-    if (!res.ok) throw new Error(res.status);
-    state.bank = await res.json();
-  } catch (err) {
-    console.error('題庫載入失敗', err);
+// 題庫由 questions.js 以 <script> 載入（直接開啟 file:// 也能使用，不需伺服器）
+function init() {
+  if (!Array.isArray(window.QUESTION_BANK)) {
+    console.error('題庫載入失敗：找不到 questions.js');
     $('view-loading').textContent = '題庫載入失敗，請重新整理頁面。';
     return;
   }
+  state.bank = window.QUESTION_BANK;
   state.byId = new Map(state.bank.map((q) => [q.id, q]));
   state.chapters = buildChapters(state.bank);
   state.wrong = storage.get(STORAGE_KEYS.wrong, []);
